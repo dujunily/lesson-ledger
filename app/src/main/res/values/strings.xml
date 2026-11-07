@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">课时簿</string>
+    <string name="widget_label">今日打卡</string>
+    <string name="widget_desc">显示今天的课程与待打卡数量，一键确认上课</string>
+
+    <string name="widget_list_label">今日课程</string>
+    <string name="widget_list_desc">列出今天每节课的时间和状态，支持一键打卡</string>
+    <string name="widget_next_label">下一节课</string>
+    <string name="widget_next_desc">显示最近一节待上课次的时间和课程</string>
+    <string name="widget_quick_label">快捷打卡</string>
+    <string name="widget_quick_desc">一个按钮，点一下确认今天上课</string>
+</resources>

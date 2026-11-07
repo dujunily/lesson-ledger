@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="window_bg">#FAF8F5</color>
+    <color name="ic_launcher_background">#FF8A4C</color>
+
+    <!-- 桌面小组件：亮色 -->
+    <color name="widget_bg">#F7F3ED</color>
+    <color name="widget_stroke">#1E000000</color>
+    <color name="widget_text_primary">#3B332D</color>
+    <color name="widget_text_secondary">#8A8178</color>
+    <color name="widget_btn">#A5714F</color>
+    <color name="widget_btn_muted">#EDE6DD</color>
+    <color name="widget_btn_text">#FFFFFF</color>
+    <color name="widget_btn_muted_text">#8A8178</color>
+
+    <!-- 课次状态文字 -->
+    <color name="widget_status_pending">#A5714F</color>
+    <color name="widget_status_done">#4C8C5B</color>
+    <color name="widget_status_warning">#B4593F</color>
+    <color name="widget_status_muted">#8A8178</color>
+</resources>

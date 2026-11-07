@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="window_bg">#141210</color>
+
+    <!-- 桌面小组件：暗色（底板要比纯黑亮一档，才看得见卡片轮廓） -->
+    <color name="widget_bg">#212329</color>
+    <color name="widget_stroke">#33FFFFFF</color>
+    <color name="widget_text_primary">#ECE8E3</color>
+    <color name="widget_text_secondary">#9C948B</color>
+    <color name="widget_btn">#B58368</color>
+    <color name="widget_btn_muted">#2C2F36</color>
+    <color name="widget_btn_text">#FFFFFF</color>
+    <color name="widget_btn_muted_text">#9C948B</color>
+
+    <!-- 课次状态文字 -->
+    <color name="widget_status_pending">#B58368</color>
+    <color name="widget_status_done">#7FBF8E</color>
+    <color name="widget_status_warning">#D08A70</color>
+    <color name="widget_status_muted">#9C948B</color>
+</resources>

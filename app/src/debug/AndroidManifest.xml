@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 仅 debug 构建允许明文 HTTP，便于用本地 WebDAV 桩服务联调；release 不会带上这个属性 -->
+    <application android:usesCleartextTraffic="true" />
+</manifest>

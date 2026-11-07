@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 仅两项网络权限，票据照片走系统相册/相机 Intent，不申请存储权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- 上课提醒：Android 13+ 发通知必须用户授权；未授权时功能降级但不崩 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 重启后重排闹钟：系统重启会清空所有 AlarmManager 闹钟 -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <!-- 精确闹钟：保证"上课前 30 分钟"准点响，而不是被系统拖延十几分钟。
+         USE_EXACT_ALARM（Android 13+ 自动授予）用于日历/课程提醒这类核心功能；
+         SCHEDULE_EXACT_ALARM 兼容 Android 12。 -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <!-- 应用内更新：从坚果云下载 APK 后交给系统安装器。
+         装的时候系统仍会弹「是否安装」确认框，这一步用户必须亲手点，无法绕过。 -->
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+
+    <!-- WorkManager 会顺带捎上这几个权限，这里显式剔除，保证安装包只有上面两项。
+         RECEIVE_BOOT_COMPLETED：JobScheduler 的持久化任务本身能跨重启恢复，不需要额外接收开机广播；
+         FOREGROUND_SERVICE：我们只跑普通后台任务，从不 setForeground / setExpedited，不会前台常驻；
+         WAKE_LOCK：同步任务最坏几秒内结束，不靠唤醒锁续命。 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" tools:node="remove" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" tools:node="remove" />
+
+    <application
+        android:name=".LedgerApp"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
+        android:theme="@style/Theme.LessonLedger">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.LessonLedger">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
+        <!-- 闹钟响起 → 发上课提醒通知 -->
+        <receiver
+            android:name=".data.reminder.ReminderReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.yiweiqiu.lessonledger.action.REMIND" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 每天早上 10:00 → 发当天课程汇总 -->
+        <receiver
+            android:name=".data.reminder.DigestReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.yiweiqiu.lessonledger.action.DAILY_DIGEST" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 开机 / 应用更新后重排闹钟 -->
+        <receiver
+            android:name=".data.reminder.ReminderBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 应用内更新：PackageInstaller 的安装结果回执 -->
+        <receiver
+            android:name=".data.update.InstallResultReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="cn.yiweiqiu.lessonledger.action.INSTALL_RESULT" />
+            </intent-filter>
+        </receiver>
+
+        <!-- 桌面小组件「今日打卡」 -->
+        <receiver
+            android:name=".data.widget.CheckinWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/checkin_widget_info" />
+        </receiver>
+
+        <!-- 桌面小组件「今日课程」（列表） -->
+        <receiver
+            android:name=".data.widget.TodayListWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_list_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/today_list_widget_info" />
+        </receiver>
+
+        <!-- 桌面小组件「下一节课」 -->
+        <receiver
+            android:name=".data.widget.NextLessonWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_next_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/next_widget_info" />
+        </receiver>
+
+        <!-- 桌面小组件「快捷打卡」 -->
+        <receiver
+            android:name=".data.widget.QuickMarkWidgetProvider"
+            android:exported="false"
+            android:label="@string/widget_quick_label">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/quick_widget_info" />
+        </receiver>
+
+        <!-- WorkManager 交给 Hilt 的 Configuration.Provider 初始化 -->
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+        </provider>
+    </application>
+</manifest>

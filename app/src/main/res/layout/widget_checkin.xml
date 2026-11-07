@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_bg"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:gravity="center_vertical">
+
+    <!-- 日期 + 状态合成一行（字号混排由代码里的 Spannable 控制），
+         保证 3x1 格子高度内装得下：状态行 + 按钮两段结构 -->
+    <TextView
+        android:id="@+id/widget_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textColor="@color/widget_text_primary" />
+
+    <TextView
+        android:id="@+id/widget_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:background="@drawable/widget_btn_primary"
+        android:paddingTop="7dp"
+        android:paddingBottom="7dp"
+        android:maxLines="1"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/widget_btn_text"
+        android:clickable="true"
+        android:focusable="true" />
+</LinearLayout>
